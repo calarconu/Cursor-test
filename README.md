@@ -1,2 +1,2 @@
 # Cursor-test
-App just for test only
+App Created just for test with Ionic v1 and AngularJs v1
