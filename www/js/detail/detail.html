@@ -1,0 +1,32 @@
+<ion-view title="Detalle">
+	<ion-content scroll="false">
+		<div class="card">
+			<div class="item item-divider">
+				Datos de Contacto
+			</div>
+			<div class="item item-text-wrap">
+
+				<a class="item item-icon-left">
+					<i class="icon ion-android-person balanced"></i>
+					{{detailCtrl.personaSelecionada.nombre}} {{detailCtrl.personaSelecionada.apellido}}
+				</a>
+
+				<a class="item item-icon-left" ng-class="{'wrong' : !detailCtrl.validaRut(detailCtrl.personaSelecionada.rut)}">
+					<i class="icon ion-ios-paper balanced"></i>
+					{{detailCtrl.personaSelecionada.rut | rut}}
+				</a>
+
+				<a class="item item-icon-left" ng-class="{'wrong' : !detailCtrl.validaTelefono(detailCtrl.personaSelecionada.telefono)}">
+					<i class="icon ion-ios-telephone balanced"></i>
+					{{detailCtrl.personaSelecionada.telefono | telefono}}
+				</a>
+
+				<a class="item item-icon-left">
+					<i class="icon ion-ios-location balanced"></i>
+					{{detailCtrl.personaSelecionada.direccion.calle}} {{detailCtrl.personaSelecionada.direccion.numero}}, {{detailCtrl.personaSelecionada.direccion.comuna.nombre}}
+				</a>
+
+			</div>
+		</div>
+	</ion-content>
+</ion-view>

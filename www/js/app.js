@@ -1,7 +1,11 @@
-angular.module('cursorApp', ['ionic', 'starter.menu', 'starter.list', 'starter.about', 'starter.services'])
+angular.module('cursorApp', ['ionic', 'starter.menu', 'starter.list', 'starter.about', 'starter.detail', 'starter.services', 'starter.filters'])
 
 .run(function($ionicPlatform) {
-    $ionicPlatform.ready(function(){});
+    $ionicPlatform.ready(function(){
+        if (window.StatusBar) {
+            window.StatusBar.backgroundColorByHexString('#9BCA00');
+        }
+});
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -20,6 +24,16 @@ angular.module('cursorApp', ['ionic', 'starter.menu', 'starter.list', 'starter.a
             'menuContent': {
                 templateUrl: 'js/list/list.html',
                 controller: 'listPersonController as listCtrl'
+            }
+        }
+    })
+
+    .state('app.detail', {
+        url: '/list/:idPersona',
+        views: {
+            'menuContent': {
+                templateUrl: 'js/detail/detail.html',
+                controller: 'detailController as detailCtrl'
             }
         }
     })

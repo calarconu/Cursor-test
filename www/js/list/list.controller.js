@@ -1,47 +1,119 @@
 (function () {
-    'use strict';
+	'use strict';
 
-    angular.module('starter.list')
-    .controller('listPersonController', listPersonController);
+	angular.module('starter.list')
+	.controller('listPersonController', listPersonController);
 
-    listPersonController.$inject = ['getterAndSetter', 'HttpService', '$ionicModal', '$scope'];         
-    function listPersonController(getterAndSetter, HttpService, modal, $scope) {
+	listPersonController.$inject = ['getterAndSetter', 'HttpService', '$ionicModal', '$scope'];         
+	function listPersonController(getterAndSetter, HttpService, $ionicModal, $scope) {
 
-    	var vm = this;
+		var vm = this;
 
         //Variables
-		vm.personsData = [];
-		vm.countriesData = [];
-		vm.modalDetalle;
+        vm.personsData 		= [];
+        vm.countriesData 	= [];
+        vm.nombreModel;
+        vm.apellidoModel;
+        vm.regionModel;
+        vm.comunaModel;
+        vm.filterNombre 	= '';
+        vm.filterApellido 	= '';
+        vm.filterRegion 	= '';
+        vm.filterComuna 	= '';
+        vm.hasFilters		= false;
 
-		//Funciones
-		vm.openModal = openModal;
-		vm.closeModal = closeModal;
+        //Functions
+        vm.validaRut 			= validaRut;
+        vm.openModalFiltrar 	= openModalFiltrar;
+        vm.closeModalFiltrar 	= closeModalFiltrar;
+        vm.filtrarDatos 		= filtrarDatos;
+        vm.borrarFiltro 		= borrarFiltro;
 
-		modal.fromTemplateUrl('personDetail.html', {
-			scope: $scope,
-			animation: 'slide-in-up'
-		}).then(function(modal) {
-			vm.modalDetalle = modal;
-		});
+        HttpService.getPersons().then(function(obj){
+        	getterAndSetter.setPersonsVar(obj);
+        	vm.personsData = obj;
+        });
 
-		function openModal(){
-			vm.modalDetalle.show();
-		}
+        HttpService.getCountries().then(function(obj){
+        	getterAndSetter.setCountriesVar(obj);
+        	vm.countriesData = obj;
+        });
 
-		function closeModal(){
-			vm.modalDetalle.hide();
-		}
+        //Configuramos el modal
+        $ionicModal.fromTemplateUrl('filtrarModal.html', {
+        	scope: $scope,
+        	animation: 'slide-in-up'
+        }).then(function(modal) {
+        	$scope.modal = modal;
+        });
 
-		HttpService.getPersons().then(function(obj){
-			getterAndSetter.setPersonsVar(obj);
-			vm.personsData = obj;
-		});
+        function openModalFiltrar(){
+        	$scope.modal.show();
+        }
 
-		HttpService.getCountries().then(function(obj){
-			getterAndSetter.setCountriesVar(obj);
-			vm.countriesData = obj;
-		});
+        function closeModalFiltrar(){
+        	resetModal();
+        	$scope.modal.hide();
+        }
+
+        function filtrarDatos(){
+        	vm.personsData.forEach(function(response){
+        		if( response.comunaId === undefined ){
+        			response.comunaId = response.direccion.comuna.id;
+        			vm.countriesData.forEach(function(countries){
+        				countries.comunas.forEach(function(comunas){
+        					if( comunas.id === response.comunaId ) response.regionId = countries.id;
+        				});
+        			});
+        		}
+        	});
+        	vm.hasFilters = true;
+        	vm.filterNombre = vm.nombreModel;
+        	vm.filterApellido = vm.apellidoModel;
+        	vm.filterComuna = vm.comunaModel;
+        	vm.filterRegion = vm.regionModel;
+        	closeModalFiltrar();
+        }
+
+        function borrarFiltro(){
+        	resetModal();
+        	resetAll();
+        	vm.hasFilters = false;
+        	closeModalFiltrar();
+        }
+
+        function resetModal(){
+        	vm.nombreModel = undefined;
+        	vm.apellidoModel = undefined;
+        	vm.regionModel = undefined;
+        	vm.comunaModel = undefined;
+        }
+
+        function resetAll(){
+        	vm.filterNombre = '';
+        	vm.filterApellido = '';
+        	vm.filterRegion = '';
+        	vm.filterComuna = '';
+        }
+
+        //Funcion para validar el rut
+        function validaRut(rutCompleto) {
+        	if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test( rutCompleto ))
+        		return false;
+        	var tmp 	= rutCompleto.split('-');
+        	var digv	= tmp[1]; 
+        	var rut 	= tmp[0];
+        	if ( digv == 'K' ) digv = 'k' ;
+        	return (dv(rut) == digv );
+        }
+
+        function dv(T){
+        	var M=0,S=1;
+        	for(;T;T=Math.floor(T/10))
+        		S=(S+T%10*(9-M++%6))%11;
+        	return S?S-1:'k';
+        }
+
     }
 
 })();

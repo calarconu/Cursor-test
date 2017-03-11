@@ -1,21 +1,64 @@
 <ion-view title="Personas">
 	<ion-content>
-		<a class="item item-icon-left" ng-click="listCtrl.openModal()" ng-repeat="person in listCtrl.personsData" ng-if="person.activo === 1">
-			<i class="icon ion-person balanced"></i>
-			{{person.nombre}} {{person.apellido}}
-			<span class="item-note">
-				{{person.rut}}
-			</span>
-		</a>
+		<div ng-if="listCtrl.personsData.length > 0">
+			<a class="item item-icon-left" href="#/app/list/{{person.id}}" ng-repeat="person in listCtrl.personsData | filter:{nombre: listCtrl.filterNombre, apellido: listCtrl.filterApellido, comunaId: listCtrl.filterComuna.id, regionId:listCtrl.filterRegion.id} as results" ng-if="person.activo === 1">
+				<i class="icon ion-person balanced"></i>
+				{{person.nombre}} {{person.apellido}}
+				<span class="item-note" ng-class="{'wrong' : !listCtrl.validaRut(person.rut)}">
+					{{person.rut | rut}}
+				</span>
+			</a>
+			<div ng-if="results.length == 0" class="text-center">
+				<div class="card">
+					<div class="item item-text-wrap">
+						No se encontraron datos con los filtros aplicados...
+					</div>
+				</div>
+			</div>
+		</div>
 
-		<script id="personDetail.html" type="text/ng-template">
+		<div class="bar bar-footer">
+			<button class="button button-clear button-positive" ng-if="listCtrl.hasFilters" ng-click="listCtrl.borrarFiltro()">Limpiar Filtro</button>
+			<button class="button button-clear button-positive pull-right" ng-click="listCtrl.openModalFiltrar()">Filtrar</button>
+		</div>
+
+		<div ng-if="listCtrl.personsData.length === 0" class="text-center">
+			<ion-spinner icon="android"></ion-spinner> Cargando...
+		</div>
+
+
+		<script id="filtrarModal.html" type="text/ng-template">
 			<ion-modal-view>
 				<ion-header-bar class="bar bar-header bar-energized" align-title="center">
-					<h1 class="title">Detalle</h1>
-					<button class="button button-clear button-primary" ng-click="listCtrl.closeModal()">Cerrar</button>
+					<h1 class="title">Filtrar Datos</h1>
+					<button class="button button-clear button-primary" ng-click="listCtrl.closeModalFiltrar()">Cerrar</button>
 				</ion-header-bar>
 				<ion-content>
-					Hello!
+					<div class="list">
+						<label class="item item-input item-stacked-label">
+							<span class="input-label">Nombre</span>
+							<input type="text" ng-model="listCtrl.nombreModel">
+						</label>
+						<label class="item item-input item-stacked-label">
+							<span class="input-label">Apellido</span>
+							<input type="text" ng-model="listCtrl.apellidoModel">
+						</label>
+						<label class="item item-input item-select">
+							<div class="input-label">
+								Región
+							</div>
+							<select ng-model="listCtrl.regionModel" ng-options="countrie.nombre for countrie in listCtrl.countriesData"></select>
+						</label>
+						<label class="item item-input item-select">
+							<div class="input-label">
+								Comuna
+							</div>
+							<select ng-model="listCtrl.comunaModel" ng-options="comuna.nombre for comuna in listCtrl.regionModel.comunas" ng-disabled="listCtrl.regionModel === undefined"></select>
+						</label>
+						<button class="button button-full button-dark" ng-click="listCtrl.filtrarDatos()" ng-disabled="listCtrl.nombreModel === undefined && listCtrl.apellidoModel === undefined && listCtrl.regionModel === undefined && listCtrl.comunaModel === undefined">
+							Filtrar
+						</button>
+					</div>
 				</ion-content>
 			</ion-modal-view>
 		</script>

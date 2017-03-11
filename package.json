@@ -1,7 +1,7 @@
 {
   "name": "cursor-test",
   "version": "1.1.1",
-  "description": "cursor-test: An Ionic project",
+  "description": "cursor-test: An Ionic project made by Claudio Alarcon",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-sass": "^2.0.4",
