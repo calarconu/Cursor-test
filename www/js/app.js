@@ -1,11 +1,7 @@
 angular.module('cursorApp', ['ionic', 'starter.menu', 'starter.list', 'starter.about', 'starter.detail', 'starter.services', 'starter.filters'])
 
 .run(function($ionicPlatform) {
-    $ionicPlatform.ready(function(){
-        if (window.StatusBar) {
-            window.StatusBar.backgroundColorByHexString('#9BCA00');
-        }
-});
+    $ionicPlatform.ready(function(){});
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
